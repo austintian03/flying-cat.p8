@@ -1,0 +1,205 @@
+pico-8 cartridge // http://www.pico-8.com
+version 42
+__lua__
+function _init()
+	make_player()
+	make_stars()
+	make_enemies()
+end
+
+function _update()
+	--add and move stars
+	add_stars()
+	foreach(stars,update_star)
+	
+	--player update
+	move_player()
+	player_shoot()
+	if(#p.bullets>0) then
+		foreach(p.bullets,update_bullet)
+	end
+	
+	--enemy update
+	foreach(enemies,update_enemy)
+end
+
+function _draw()
+	cls(1)
+	--background
+	foreach(stars,draw_star)
+	
+	--player
+	draw_player()
+	if(#p.bullets>0) then
+		foreach(p.bullets,draw_bullet)
+	end
+	
+	--enemies
+	foreach(enemies,draw_enemy)
+end
+-->8
+function make_player()
+	dr=0.5
+	p={}
+	p.x=8
+	p.y=60
+	p.dx=0
+	p.dy=0
+	p.max_spd=3
+	p.sprite=1
+	p.bullets={}
+end
+
+function move_player()
+	--add drag to player movement
+	if (p.dx>0) p.dx-=dr
+	if (p.dx<0)	p.dx+=dr
+	if (p.dy>0)	p.dy-=dr
+	if (p.dy<0)	p.dy+=dr
+	
+	--add speed
+	if (btn(0)) p.dx-=1
+	if (btn(1)) p.dx+=1
+	if (btn(2)) p.dy-=1
+	if (btn(3)) p.dy+=1
+	cap_speed()
+	
+	--adjust position
+	p.x+=p.dx
+	p.y+=p.dy
+	stay_on_screen()
+end
+
+function stay_on_screen()
+	if (p.x<0) then --left side
+		p.x=0
+		p.dx=0
+	end
+	if (p.x>111) then --right side
+		p.x=111
+		p.dx=0
+	end
+	if (p.y<0) then --top side
+		p.y=0
+		p.dy=0
+	end
+	if (p.y>111) then --bot side
+		p.y=111
+		p.dy=0
+	end
+end
+
+function cap_speed()
+	--cap horizontal speed
+	local cap_dx=mid(0,abs(p.dx),p.max_spd)
+	p.dx=(p.dx/abs(p.dx)) * cap_dx
+	
+	--cap vertical speed
+	local cap_dy=mid(0,abs(p.dy),p.max_spd)
+	p.dy=(p.dy/abs(p.dy)) * cap_dy
+end
+
+function player_shoot()
+	if(btnp(5)) then
+		sfx(0)
+		local b={}
+		b.x=p.x+15
+		b.y=p.y+11
+		add(p.bullets,b)
+	end
+end
+
+function update_bullet(b)
+	b.x+=3
+	if(b.x>127) then
+		del(p.bullets,b)
+	end
+end
+
+function draw_bullet(b)
+	pset(b.x,b.y,8)
+end
+
+function draw_player()
+	spr(p.sprite,p.x,p.y,2,2)
+end
+-->8
+function rndb(low,high)
+	return flr(rnd(high-low+1)+low)
+end
+
+function make_stars()
+ stars={}
+ for i=1,25 do
+ 	local s={}
+ 	s.x=rndb(0,127)
+ 	s.y=rndb(0,127)
+ 	s.col=rndb(5,7)
+		add(stars,s)
+	end
+end
+
+function update_star(s)
+	s.x-=1
+	if (s.x<0) del(stars,s)
+end
+
+function add_stars()
+	while (#stars<50) do
+		local s={}
+		s.x=rndb(128,255)
+		s.y=rndb(0,127)
+		s.col=rndb(5,7)
+		add(stars,s)
+	end
+end
+
+function draw_star(s)
+	pset(s.x,s.y,s.col)
+end
+-->8
+function make_enemies()
+	enemies={}
+	for i=1,6 do
+		local e={}
+		e.x=rndb(143,161)
+		e.y=rndb(0,119)
+		e.sprite=4
+		add(enemies,e)
+	end
+end
+
+function update_enemy(e)
+	local dist={e.x-p.x,p.y-e.y}
+ local rf=mid(0.5,1,atan2(dist[1],abs(dist[2])))
+	--move toward player location
+	if (e.x<p.x+79 and e.x>p.x+15) then
+			e.y+=dist[2]/abs(dist[2])/2*rf
+			e.x-=1.8*rf
+	else
+		e.x-=1.2*rf
+	end
+end
+
+function draw_enemy(e)
+	spr(e.sprite,e.x,e.y)
+end
+__gfx__
+00000000000000033000000000555500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000030038000000555555000200d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+007007000000003008f8000005d55d500002d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000000008030080000055dddd55008282000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0007700000000000300080000daddad022222d220000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+007007000000005555000000d0dddd002d02d0220000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000555555000000d0dd000d020020d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000005d55d50000000ddd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000055dddd55000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000daddad0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000009000d0dddd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000009900d0dd006665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000900900ddd005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000099094444444444000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000009900000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+00010000000000500001600016000160001600026000070000000066000660007600057000670007700087000b700096000000000000000000000000000000000000000000114000e400134101e4101d41022410
