@@ -2,7 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 function _init()
-	make_player(24,60)
+	make_player(24,112)
 end
 
 function _update()
@@ -22,7 +22,7 @@ function make_player(x,y)
 	p.dx=0
 	p.dy=0
 	p.spd=3
-	p.jmp=6
+	p.jmp=8
 	p.idle={1,3}
 	p.idle_f=rndb(1,2)
 	p.idle_ft=15
@@ -31,11 +31,11 @@ end
 
 function move_player()
 	--apply gravity and friction
-	if (p.y<112) p.dy+=g
+	p.dy+=g
 	if (p.dx>0) p.dx-=p.spd
 	if (p.dx<0) p.dx+=p.spd
 	--collision with edge of screen
-	if (p.y>112) then
+	if (p.y>=112) then
 		p.y=112
 		p.dy=0
 	end
