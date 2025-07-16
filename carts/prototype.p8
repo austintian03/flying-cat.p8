@@ -181,10 +181,11 @@ end
 function update_enemy(e)
 	local dist={e.x-p.x,p.y-e.y}	--line between player and enemy
  local rf=mid(0.5,1,atan2(dist[1],abs(dist[2])))
+	local dir=dist[2]/abs(dist[2])
 	--move toward player location
 	if (e.x<p.x+71 and e.x>=p.x-128) then
 		e.aggro=true
-		e.dy=dist[2]/abs(dist[2])*rf
+		e.dy=dir*rf
 		e.dx=2.5*rf
 	else
 		e.aggro=false
