@@ -20,7 +20,11 @@ function _update()
 	end
 	
 	--enemy update
+	while #enemies<25 do
+		add_enemy(168)
+	end
 	foreach(enemies,update_enemy)
+	
 end
 
 function _draw()
@@ -165,17 +169,21 @@ end
 function make_enemies()
 	enemies={}
 	for i=1,10 do
-		local e={}
-		e.x=rndb(176,512)
-		e.y=rndb(0,119)
-		e.dx=0
-		e.dy=0
-		e.sprite={4,5}
-		e.nf=rndb(1,2)
-		e.ft=rndb(15,20)
-		e.aggro=false
-		add(enemies,e)
+		add_enemy(0)
 	end
+end
+
+function add_enemy(x)
+	local e={}
+	e.x=rndb(x+176,x+512)
+	e.y=rndb(0,119)
+	e.dx=0
+	e.dy=0
+	e.sprite={4,5}
+	e.nf=rndb(1,2)
+	e.ft=rndb(15,20)
+	e.aggro=false
+	add(enemies,e)
 end
 
 function update_enemy(e)
