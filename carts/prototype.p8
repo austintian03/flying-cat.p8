@@ -53,7 +53,7 @@ function _draw()
 end
 -->8
 function make_player()
-	dr=0.5
+	dr=0.5		--drag
 	p={}
 	p.x=8
 	p.y=60
@@ -185,22 +185,27 @@ end
 
 function add_enemy(x)
 	local e={}
-	e.x=rndb(x+176,x+512)
+	e.x=rndb(x+176,x+512)	--spawn at random pos
 	e.y=rndb(0,119)
 	e.dx=0
 	e.dy=0
 	e.sprite={4,5}
-	e.nf=rndb(1,2)
-	e.ft=rndb(15,20)
-	e.aggro=false
+	e.nf=rndb(1,2)			--next spriteframe
+	e.ft=rndb(15,20)	--random initial frametime
+	e.aggro=false				--aggro state
 	add(enemies,e)
 end
 
 function update_enemy(e)
-	local dist={e.x-p.x,p.y-e.y}	--line between player and enemy
- local rf=mid(0.5,1,atan2(dist[1],abs(dist[2])))
-	local dir=dist[2]/abs(dist[2])
-	--move toward player location
+	collide_with_p(e) --check for player collision
+	
+	--local vars to aide movement calcs
+	local dist={e.x-p.x,p.y-e.y}					--line between player and enemy
+	local ang=atan2(dist[1],dist[2]) --using angle between (0,0) and (dx,dy)
+ local rf=mid(0.5,1,ang)										--random factor between 0.5 and 1
+	local dir=dist[2]/abs(dist[2]) 		--direction
+	
+	--set directional force, checking aggro distance
 	if ((e.x<p.x+71 and e.x>=p.x-128) or e.aggro) then
 		e.aggro=true
 		e.dy=dir*rf
@@ -210,21 +215,23 @@ function update_enemy(e)
 		e.dy=rndb(-1,1)*rf
 	end
 	
-	bind_vertical(e)
+	--move the player, staying within bounds
 	e.x-=e.dx
 	e.y+=e.dy
+	bind_vertical(e)
 	
-	collide_with_p(e)
+	--causes for deletion
 	if (e.x<-7) del(enemies,e)
 end
 
 function bind_vertical(e)
-	--prevent collision with other bats
+	--fuzzy method to prevent bat stacking
 	if (pget(e.x,e.y-1)==3 or
 	pget(e.x,e.y+8)==3) then
 		e.dy=0
 	end
 	
+	--screen boundary
 	if (e.y<=0) then --top side
 		e.y=0
 	end
@@ -240,19 +247,19 @@ function collide_with_p(e)
 end
 
 function check_x_col(e)
-	local col=false
+	--horizontal hitbox of 8 pixels
 	for i=e.x,e.x+7 do
-		if (i>=p.x+5 and i<=p.x+10) col=true
+		if (i>=p.x+5 and i<=p.x+10) return true
 	end
-	return col
+	return false
 end
 
 function check_y_col(e)
-	local col=false
+	--vertical hitbox of 5 pixels
 	for i=e.y,e.y+4 do
-		if (i>=p.y+2 and i<=p.y+13) col=true
+		if (i>=p.y+2 and i<=p.y+13) return true
 	end
-	return col
+	return false
 end
 
 function draw_enemy(e)
