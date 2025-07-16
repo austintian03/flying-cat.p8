@@ -172,7 +172,7 @@ function make_enemies()
 		e.dy=0
 		e.sprite={4,5}
 		e.nf=rndb(1,2)
-		e.ft=20
+		e.ft=rndb(15,20)
 		e.aggro=false
 		add(enemies,e)
 	end
@@ -197,7 +197,7 @@ function update_enemy(e)
 	e.x-=e.dx
 	e.y+=e.dy
 	
-	if (e.x<-8) del(enemies,e)
+	if (e.x<-7) del(enemies,e)
 end
 
 function bind_vertical(e)
@@ -225,7 +225,7 @@ function draw_enemy(e)
 			e.nf=1
 		end
 		if (not e.aggro) then
-			e.ft=rndb(15,20)
+			e.ft=15
 		else
 			e.ft=5
 		end
