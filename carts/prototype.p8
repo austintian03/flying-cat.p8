@@ -209,20 +209,19 @@ end
 function update_enemy(e)
 	collide_with_b(e)	--check for bullet
 	collide_with_p(e) --check for player collision
+	
 	--local vars to aide movement calcs
 	local dist={e.x-p.x,p.y-e.y}					--line between player and enemy
-	local ang=atan2(dist[1],abs(dist[2])) --using angle between (0,0) and (dx,dy)
- local rf=mid(0.5,1,ang)										--random factor between 0.5 and 1
 	local dir=dist[2]/abs(dist[2]) 		--direction
 	
 	--set directional force, checking aggro distance
-	if ((e.x<p.x+71 and e.x>=p.x-128) and not e.aggro) then
+	if ((e.x<p.x+72 and e.x>=p.x) or (e.aggro and e.x>=p.x+15)) then
 		e.aggro=true
-		e.dy=max(dir*1.5,dist[2]/30)*rf
-		e.dx=min(2.5,dist[1]/30)*rf
+		e.dy=max(dir*1.6,dist[2]/30)
+		e.dx=max(2.5,dist[1]/30)
 	elseif (not e.aggro) then
-		e.dx=0.8*rf
-		e.dy=rndb(-1,1)*rf
+		e.dx=0.8
+		e.dy=rndb(-1,1)
 	end
 	
 	--move the player, staying within bounds
