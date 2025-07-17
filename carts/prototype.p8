@@ -22,7 +22,7 @@ function _update()
 		end
 		
 		--enemy update
-		while #enemies<25 do
+		while #enemies<30 do
 			add_enemy(168)
 		end
 		foreach(enemies,update_enemy)
@@ -116,19 +116,19 @@ end
 function player_shoot()
 	if(#p.bullets<3 and btnp(5)) then
 		sfx(0)
-		--local dir=(p.dy==0 and {0} or {p.dy/abs(p.dy)})[1]
+		local dir=(p.dy==0 and {0} or {p.dy/abs(p.dy)})[1]
 		local b={}
 		b.x=p.x+15
 		b.y=p.y+11
 		b.dx=2
-		--b.dy=max(0.33,abs(p.dy/3))*dir
+		b.dy=max(0.5,abs(p.dy/3))*dir
 		add(p.bullets,b)
 	end
 end
 
 function update_bullet(b)
 	b.x+=b.dx
-	--b.y+=b.dy
+	b.y+=b.dy
 	if(b.x>127) then
 		del(p.bullets,b)
 	end
@@ -215,10 +215,10 @@ function update_enemy(e)
 	local dir=dist[2]/abs(dist[2]) 		--direction
 	
 	--set directional force, checking aggro distance
-	if ((e.x<p.x+72 and e.x>=p.x) or (e.aggro and e.x>=p.x+15)) then
+	if ((e.x<p.x+72 and e.x>=p.x+20)) then
 		e.aggro=true
-		e.dy=max(dir*1.6,dist[2]/30)
-		e.dx=max(2.5,dist[1]/30)
+		e.dy=max(dir*1.8,dist[2]/32)
+		e.dx=max(2.5,dist[1]/24)
 	elseif (not e.aggro) then
 		e.dx=0.8
 		e.dy=rndb(-1,1)
