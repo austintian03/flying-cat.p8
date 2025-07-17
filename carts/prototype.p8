@@ -200,8 +200,8 @@ function update_enemy(e)
 	collide_with_p(e) --check for player collision
 	
 	--local vars to aide movement calcs
-	local dist={e.x-p.x,p.y-e.y}					--line between player and enemy
-	local ang=atan2(dist[1],dist[2]) --using angle between (0,0) and (dx,dy)
+	local dist={e.x-p.x,p.y+8-e.y}					--line between player and enemy
+	local ang=atan2(dist[1],abs(dist[2])) --using angle between (0,0) and (dx,dy)
  local rf=mid(0.5,1,ang)										--random factor between 0.5 and 1
 	local dir=dist[2]/abs(dist[2]) 		--direction
 	
