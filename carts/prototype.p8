@@ -135,13 +135,14 @@ function player_shoot()
 		local b={}
 		b.x=p.x+15
 		b.y=p.y+11
-		b.dx=2
+		b.dx=1
 		b.dy=max(0.5,abs(p.dy/3))*dir
 		add(p.bullets,b)
 	end
 end
 
 function update_bullet(b)
+	b.dx+=0.1
 	b.x+=b.dx
 	b.y+=b.dy
 	if(b.x>127) then
