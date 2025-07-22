@@ -265,10 +265,10 @@ function bind_vertical(e)
 	end
 	
 	--screen boundary
-	if (e.y<=0) then --top side
+	if (e.y<0) then --top side
 		e.y=0
 	end
-	if (e.y>=119) then --bot side
+	if (e.y>119) then --bot side
 		e.y=119
 	end
 end
